@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Armá y guardá rutinas de gimnasio, registrá pesos y consultá ejercicios."
+    />
+    <meta name="theme-color" content="#10130f" />
+    <title>Armar rutina — UrbanFit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body class="min-h-screen antialiased">
+    <div class="page-shell">
+      <header class="topbar flex items-center justify-between">
+        <a class="brand" href="./" aria-label="Volver a mis rutinas">
+          <span class="brand-mark" aria-hidden="true">UF</span>
+          <span>URBAN<span class="brand-light">FIT</span></span>
+        </a>
+        <a class="back-link" href="./">← Mis rutinas</a>
+      </header>
+
+      <main>
+        <section class="hero relative flex items-center justify-between">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span> TU PRÓXIMO ENTRENAMIENTO</p>
+            <h1>Armá tu rutina.<br /><span>Entrená</span> a tu manera.</h1>
+            <p class="hero-description">
+              Elegí ejercicios del catálogo, registrá los kilos y guardá tu plan para volver a usarlo.
+            </p>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="hero-ring"></div>
+            <div class="hero-number">01<span>/07</span></div>
+            <div class="hero-caption">HOY CUENTA</div>
+          </div>
+        </section>
+
+        <section class="selection-section" aria-labelledby="catalog-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">01 — CATÁLOGO</p>
+              <h2 id="catalog-title">Elegí tus ejercicios</h2>
+            </div>
+            <span id="catalog-count" class="section-note">CARGANDO EJERCICIOS...</span>
+          </div>
+          <div class="catalog-toolbar">
+            <label class="search-wrap" for="exercise-search">
+              <span aria-hidden="true">⌕</span>
+              <input id="exercise-search" type="search" placeholder="Buscar ejercicio..." autocomplete="off" />
+            </label>
+            <div id="group-filters" class="group-filters" aria-label="Filtrar por grupo muscular"></div>
+          </div>
+          <details class="custom-exercise-panel">
+            <summary>＋ Agregar un ejercicio que no está en el listado</summary>
+            <form id="custom-exercise-form" class="custom-exercise-form">
+              <label>
+                Nombre del ejercicio
+                <input name="name" type="text" maxlength="80" placeholder="Ej. Press francés con mancuernas" required />
+              </label>
+              <label>
+                Grupo muscular
+                <select id="custom-exercise-group" name="muscle_group" required></select>
+              </label>
+              <label class="custom-exercise-description">
+                Descripción (opcional)
+                <input name="description" type="text" maxlength="240" placeholder="Notas de técnica o variante" />
+              </label>
+              <label>
+                Series
+                <input name="sets" type="number" min="1" max="10" value="3" required />
+              </label>
+              <label>
+                Repeticiones
+                <input name="reps" type="text" maxlength="30" value="8-12" required />
+              </label>
+              <label>
+                Descanso (segundos)
+                <input name="rest_seconds" type="number" min="0" max="600" step="15" value="90" required />
+              </label>
+              <label class="custom-exercise-description">
+                URL de video (opcional)
+                <input name="video_url" type="url" placeholder="https://www.youtube.com/watch?v=..." />
+              </label>
+              <button class="primary-button custom-exercise-submit" type="submit">Guardar y agregar a la rutina</button>
+            </form>
+          </details>
+          <div id="catalog-grid" class="catalog-grid" aria-live="polite">
+            <p class="loading-message">Cargando catálogo...</p>
+          </div>
+        </section>
+
+        <section class="routine-section" aria-labelledby="routine-title">
+          <div class="section-heading routine-heading">
+            <div class="routine-heading-copy">
+              <p class="eyebrow">02 — TU PLAN ACTUAL</p>
+              <h2 id="routine-title">Mi rutina</h2>
+            </div>
+            <span id="routine-exercise-count" class="section-note">0 EJERCICIOS</span>
+          </div>
+          <div class="routine-save-row">
+            <label class="routine-name-wrap" for="routine-name">
+              <span>Nombre de la rutina</span>
+              <input id="routine-name" type="text" maxlength="60" placeholder="Ej. Empuje — lunes" />
+            </label>
+            <button id="save-routine" class="primary-button" type="button">Guardar rutina</button>
+          </div>
+          <div class="saved-routines-row">
+            <label for="saved-routines">Rutinas guardadas</label>
+            <select id="saved-routines">
+              <option value="">Elegí una rutina guardada...</option>
+            </select>
+            <button id="load-routine" class="secondary-button" type="button">Cargar</button>
+            <button id="new-routine" class="text-button" type="button">Nueva</button>
+          </div>
+          <div id="routine-summary" class="routine-summary"></div>
+          <div id="routine-list" class="routine-list"></div>
+          <p id="routine-empty" class="empty-routine">Todavía no agregaste ejercicios. Elegí uno del catálogo para empezar.</p>
+        </section>
+        <p id="app-status" class="app-status" role="status" aria-live="polite"></p>
+      </main>
+
+      <footer class="footer">
+        <span>HECHO PARA MOVERTE MEJOR</span>
+        <span>ESCUCHÁ TU CUERPO · PRIORIZÁ LA TÉCNICA</span>
+      </footer>
+    </div>
+    <dialog id="video-dialog" class="video-dialog" aria-labelledby="video-title">
+      <div class="video-dialog-header">
+        <h2 id="video-title">Video del ejercicio</h2>
+        <button id="close-video" class="close-video" type="button" aria-label="Cerrar video">×</button>
+      </div>
+      <div id="video-content" class="video-content"></div>
+    </dialog>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Consultá tus rutinas guardadas y armá tu próximo entrenamiento."
+    />
+    <meta name="theme-color" content="#10130f" />
+    <title>Mis rutinas — Gym Routine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body class="min-h-screen antialiased">
+    <div class="page-shell">
+      <header class="topbar flex items-center justify-between">
+        <a class="brand" href="./" aria-label="Gym Routine, inicio">
+          <span class="brand-mark" aria-hidden="true">UF</span>
+          <span>URBAN<span class="brand-light">FIT</span></span>
+        </a>
+        <span class="local-badge"><span></span> TU ESPACIO DE ENTRENAMIENTO</span>
+      </header>
+
+      <main>
+        <section class="hero relative flex items-center justify-between">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span> TU ENTRENAMIENTO</p>
+            <h1>Tus rutinas.<br /><span>A tu ritmo.</span></h1>
+            <p class="hero-description">
+              Tené tus planes a mano y volvé a entrenar cuando quieras.
+            </p>
+            <a class="primary-button create-routine-link" href="./crear.html">+ Armar otra rutina</a>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="hero-ring"></div>
+            <div class="hero-number">01<span>/07</span></div>
+            <div class="hero-caption">HOY CUENTA</div>
+          </div>
+        </section>
+
+        <section class="selection-section" aria-labelledby="saved-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">01 — TU COLECCIÓN</p>
+              <h2 id="saved-title">Rutinas guardadas</h2>
+            </div>
+            <span id="saved-count" class="section-note">CARGANDO...</span>
+          </div>
+          <div id="saved-routine-list" class="saved-routine-grid" aria-live="polite"></div>
+          <p id="saved-routines-empty" class="empty-routine" hidden>
+            Todavía no guardaste rutinas. Armá una nueva para verla acá.
+          </p>
+        </section>
+        <p id="app-status" class="app-status" role="status" aria-live="polite"></p>
+      </main>
+
+      <footer class="footer">
+        <span>HECHO PARA MOVERTE MEJOR</span>
+        <span>ESCUCHÁ TU CUERPO · PRIORIZÁ LA TÉCNICA</span>
+      </footer>
+    </div>
+  </body>
+</html>
