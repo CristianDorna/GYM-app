@@ -17,7 +17,7 @@
     />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./styles.css" />
-    <script src="./app.js" defer></script>
+    <script src="./app.js?v=3" defer></script>
   </head>
   <body class="min-h-screen antialiased">
     <div class="page-shell">
@@ -26,7 +26,13 @@
           <span class="brand-mark" aria-hidden="true">UF</span>
           <span>URBAN<span class="brand-light">FIT</span></span>
         </a>
-        <a class="back-link" href="./">← Mis rutinas</a>
+        <div class="topbar-actions">
+          <a class="back-link" href="./">← Mis rutinas</a>
+          <span id="user-badge" class="user-badge" hidden></span>
+          <button id="change-user" class="text-button change-user-button" type="button" hidden>
+            Cambiar usuario
+          </button>
+        </div>
       </header>
 
       <main>
@@ -140,6 +146,37 @@
         <button id="close-video" class="close-video" type="button" aria-label="Cerrar video">×</button>
       </div>
       <div id="video-content" class="video-content"></div>
+    </dialog>
+    <dialog id="user-dialog" class="user-dialog" aria-labelledby="user-title">
+      <form id="user-form" class="user-form">
+        <p class="eyebrow">ACCESO A TUS RUTINAS</p>
+        <h2 id="user-title">Ingresá tu DNI</h2>
+        <p class="user-dialog-description">
+          Usamos tu DNI para mostrar las rutinas guardadas para vos en este navegador.
+        </p>
+        <label for="user-dni">DNI</label>
+        <input
+          id="user-dni"
+          name="dni"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          pattern="[0-9]{7,8}"
+          minlength="7"
+          maxlength="8"
+          placeholder="Ej. 12345678"
+          aria-describedby="user-dni-hint user-error"
+          required
+        />
+        <p id="user-dni-hint" class="user-dialog-hint">
+          Ingresá los 7 u 8 números, sin puntos.
+        </p>
+        <button class="primary-button" type="submit">Entrar</button>
+        <p id="user-error" class="user-dialog-error" role="alert" hidden></p>
+        <p class="user-dialog-hint">
+          El DNI identifica tu espacio, pero no es una contraseña ni verifica tu identidad.
+        </p>
+      </form>
     </dialog>
   </body>
 </html>

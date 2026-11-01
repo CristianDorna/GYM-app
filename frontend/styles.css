@@ -41,6 +41,7 @@ a:focus-visible {
 .topbar,
 .brand,
 .local-badge,
+.topbar-actions,
 .section-heading,
 .group-card,
 .group-card-top,
@@ -55,6 +56,22 @@ a:focus-visible {
   min-height: 78px;
   justify-content: space-between;
   border-bottom: 1px solid rgb(255 255 255 / 8%);
+}
+
+.topbar-actions {
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.user-badge {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.change-user-button {
+  padding: 0;
 }
 
 .brand {
@@ -277,8 +294,27 @@ h1 span {
 }
 
 .saved-routine-card .secondary-button {
-  margin-top: 10px;
   color: var(--accent);
+}
+
+.saved-routine-actions {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.saved-routine-actions > * {
+  display: inline-flex;
+  min-height: 38px;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 11px;
+  text-align: center;
+  text-decoration: none;
 }
 
 .section-heading {
@@ -436,6 +472,53 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--panel);
+}
+
+.workout-exercise-card .exercise-info {
+  padding-bottom: 18px;
+}
+
+.workout-exercise-card h3 {
+  margin-bottom: 8px;
+  font-size: 21px;
+}
+
+.workout-exercise-card .exercise-stats {
+  margin: 14px 0;
+}
+
+.workout-weight-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.workout-weight {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.workout-weight strong {
+  color: var(--accent);
+}
+
+.workout-edit-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.workout-edit-link[hidden] {
+  display: none;
 }
 
 .exercise-info {
@@ -1000,6 +1083,81 @@ h3 {
   border-radius: 16px;
   background: var(--panel);
   color: var(--text);
+}
+
+.user-dialog {
+  width: min(420px, calc(100% - 28px));
+  max-width: none;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  color: var(--text);
+}
+
+.user-dialog::backdrop {
+  background: rgb(0 0 0 / 82%);
+  backdrop-filter: blur(4px);
+}
+
+.user-form {
+  display: grid;
+  gap: 12px;
+  padding: 28px;
+}
+
+.user-form .eyebrow,
+.user-form h2,
+.user-form p {
+  margin-bottom: 0;
+}
+
+.user-form h2 {
+  font-size: 27px;
+}
+
+.user-form label {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.user-form input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #11140f;
+  color: var(--text);
+  font: inherit;
+}
+
+.user-form input:focus {
+  border-color: var(--accent);
+  outline: 2px solid rgb(193 250 99 / 25%);
+}
+
+.user-dialog-description {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.user-dialog-hint,
+.user-dialog-error {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.user-dialog-error {
+  color: #ff9a88;
+}
+
+.user-dialog-error[hidden] {
+  display: none;
 }
 
 .video-dialog::backdrop {

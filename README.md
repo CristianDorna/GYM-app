@@ -13,6 +13,7 @@ GYM-app/
 ├── frontend/
 │   ├── app.js
 │   ├── crear.html
+│   ├── entrenamiento.html
 │   ├── index.html
 │   └── styles.css
 ├── .github/
@@ -29,7 +30,7 @@ GYM-app/
 3. Cada push a `main` o `master` ejecuta el workflow de `.github/workflows/pages.yml`. También podés iniciarlo manualmente desde la pestaña **Actions**.
 4. Cuando el workflow termine, GitHub mostrará la dirección pública en **Settings → Pages** (normalmente `https://USUARIO.github.io/REPOSITORIO/`).
 
-El workflow prepara el sitio estático copiando el frontend y el catálogo de ejercicios a la carpeta de publicación. La app guarda rutinas, ejercicios personalizados y pesos en el almacenamiento local del navegador: esos datos no se sincronizan entre dispositivos ni navegadores. GitHub Pages no ejecuta el backend FastAPI ni ofrece la API.
+El workflow prepara el sitio estático copiando el frontend y el catálogo de ejercicios a la carpeta de publicación. Al entrar, la app pide un DNI para separar las rutinas, ejercicios personalizados y pesos de cada usuario en el almacenamiento local del navegador. Los datos no se sincronizan entre dispositivos ni navegadores. El DNI solo identifica el espacio local: no verifica la identidad ni funciona como contraseña. Si ya había datos guardados antes de esta actualización, se asignan al primer DNI que inicie sesión en ese navegador. GitHub Pages no ejecuta el backend FastAPI ni ofrece la API.
 
 ## Ejecutar en Windows
 
@@ -42,7 +43,7 @@ pip install -r requirements.txt
 uvicorn backend.main:app --reload
 ```
 
-Abre <http://127.0.0.1:8000>. La página inicial muestra tus rutinas guardadas; **Armar otra rutina** abre el constructor en <http://127.0.0.1:8000/crear.html>. La documentación interactiva de la API está en <http://127.0.0.1:8000/docs>.
+Abre <http://127.0.0.1:8000> e ingresá tu DNI de 7 u 8 números. La página inicial muestra las rutinas guardadas para ese DNI; **Cambiar usuario** permite entrar con otro. **Ver para entrenar** abre la rutina en una pantalla de solo lectura y **Editar** o **Crear o modificar rutinas** abre el constructor en <http://127.0.0.1:8000/crear.html>. La documentación interactiva de la API está en <http://127.0.0.1:8000/docs>.
 
 La interfaz carga Tailwind CSS y las fuentes desde sus CDNs, por lo que se necesita conexión a internet para esos recursos. En GitHub Pages, el frontend obtiene el catálogo estático de `data/exercises.json`; el resto de la aplicación se ejecuta en el navegador.
 
@@ -52,7 +53,7 @@ La interfaz carga Tailwind CSS y las fuentes desde sus CDNs, por lo que se neces
 - `GET /api/exercises`: catálogo completo; acepta `muscle_group` y `q` como filtros.
 - `GET /api/routines/{group_id}?limit=4`: genera una rutina nueva y variada.
 
-El catálogo incluye ejercicios con nombres y descripciones en español rioplatense, separados por grupo muscular: pecho, espalda, piernas, hombros, bíceps, tríceps y core. La pantalla permite buscar y filtrar ejercicios, agregar los que quieras a la única rutina activa y registrar el peso en kg de cada serie. Las rutinas guardadas y el borrador activo se conservan en el almacenamiento local del navegador.
+El catálogo incluye ejercicios con nombres y descripciones en español rioplatense, separados por grupo muscular: pecho, espalda, piernas, hombros, bíceps, tríceps y core. El constructor permite buscar y filtrar ejercicios, agregar los que quieras a la rutina y registrar el peso en kg de cada serie. La pantalla de entrenamiento muestra por separado la rutina guardada y los pesos registrados, sin controles de edición. Las rutinas guardadas y el borrador activo se conservan en el almacenamiento local del navegador, separados por DNI.
 
 Desde el constructor también podés desplegar **Agregar un ejercicio que no está en el listado**, completar sus datos y guardarlo. El ejercicio se agrega a la rutina activa y queda disponible en el catálogo de ese navegador.
 

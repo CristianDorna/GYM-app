@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Consultá tu rutina de gimnasio durante el entrenamiento."
+    />
+    <meta name="theme-color" content="#10130f" />
+    <title>Entrenar — UrbanFit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js?v=3" defer></script>
+  </head>
+  <body class="min-h-screen antialiased">
+    <div class="page-shell">
+      <header class="topbar flex items-center justify-between">
+        <a class="brand" href="./" aria-label="Volver a mis rutinas">
+          <span class="brand-mark" aria-hidden="true">UF</span>
+          <span>URBAN<span class="brand-light">FIT</span></span>
+        </a>
+        <div class="topbar-actions">
+          <a id="edit-workout" class="secondary-button workout-edit-link" href="./crear.html" hidden>
+            Editar rutina
+          </a>
+          <span id="user-badge" class="user-badge" hidden></span>
+          <button id="change-user" class="text-button change-user-button" type="button" hidden>
+            Cambiar usuario
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero relative flex items-center justify-between">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span> MODO ENTRENAMIENTO</p>
+            <h1 id="workout-title">Tu rutina.<br /><span>A entrenar.</span></h1>
+            <p class="hero-description">
+              Tu plan en una pantalla simple, sin herramientas de edición.
+            </p>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="hero-ring"></div>
+            <div class="hero-number">01<span>/07</span></div>
+            <div class="hero-caption">HOY CUENTA</div>
+          </div>
+        </section>
+
+        <section id="workout-view" class="routine-section" aria-labelledby="workout-routine-name">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">TU PLAN DE HOY</p>
+              <h2 id="workout-routine-name">Cargando rutina...</h2>
+            </div>
+            <span id="workout-count" class="section-note"></span>
+          </div>
+          <div id="workout-summary" class="routine-summary"></div>
+          <div id="workout-exercises" class="routine-list" aria-live="polite"></div>
+          <p id="workout-empty" class="empty-routine" hidden>
+            No encontramos esa rutina. Volvé a tus rutinas guardadas para elegir otra.
+          </p>
+        </section>
+        <p id="app-status" class="app-status" role="status" aria-live="polite"></p>
+      </main>
+
+      <footer class="footer">
+        <span>HECHO PARA MOVERTE MEJOR</span>
+        <span>ESCUCHÁ TU CUERPO · PRIORIZÁ LA TÉCNICA</span>
+      </footer>
+    </div>
+    <dialog id="user-dialog" class="user-dialog" aria-labelledby="user-title">
+      <form id="user-form" class="user-form">
+        <p class="eyebrow">ACCESO A TUS RUTINAS</p>
+        <h2 id="user-title">Ingresá tu DNI</h2>
+        <p class="user-dialog-description">
+          Usamos tu DNI para mostrar las rutinas guardadas para vos en este navegador.
+        </p>
+        <label for="user-dni">DNI</label>
+        <input
+          id="user-dni"
+          name="dni"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          pattern="[0-9]{7,8}"
+          minlength="7"
+          maxlength="8"
+          placeholder="Ej. 12345678"
+          aria-describedby="user-dni-hint user-error"
+          required
+        />
+        <p id="user-dni-hint" class="user-dialog-hint">
+          Ingresá los 7 u 8 números, sin puntos.
+        </p>
+        <button class="primary-button" type="submit">Entrar</button>
+        <p id="user-error" class="user-dialog-error" role="alert" hidden></p>
+        <p class="user-dialog-hint">
+          El DNI identifica tu espacio, pero no es una contraseña ni verifica tu identidad.
+        </p>
+      </form>
+    </dialog>
+  </body>
+</html>

@@ -1,4 +1,7 @@
 const STORAGE_KEY = "gym-routine-app-v2";
+const USER_STORAGE_PREFIX = `${STORAGE_KEY}:`;
+const SESSION_USER_KEY = "gym-routine-user-dni";
+let currentDni = "";
 
 const catalogGrid = document.querySelector("#catalog-grid");
 const catalogCount = document.querySelector("#catalog-count");
@@ -15,6 +18,7 @@ const appStatus = document.querySelector("#app-status");
 const videoDialog = document.querySelector("#video-dialog");
 const videoTitle = document.querySelector("#video-title");
 const videoContent = document.querySelector("#video-content");
+const workoutView = document.querySelector("#workout-view");
 
 const groups = [
   { id: "pecho", name: "Pecho", icon: "🏋️", description: "Empujes y aperturas" },
@@ -50,7 +54,7 @@ async function fetchJson(url) {
 
 function saveState(message = "Cambios guardados en este navegador.") {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(`${USER_STORAGE_PREFIX}${currentDni}`, JSON.stringify(state));
     setStatus(message);
   } catch (error) {
     setStatus(`No se pudieron guardar los cambios: ${error.message}`, true);
@@ -59,7 +63,15 @@ function saveState(message = "Cambios guardados en este navegador.") {
 
 function loadState() {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const userStorageKey = `${USER_STORAGE_PREFIX}${currentDni}`;
+    let stored = localStorage.getItem(userStorageKey);
+    if (!stored) {
+      stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        localStorage.setItem(userStorageKey, stored);
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
     if (!stored) return;
     const parsed = JSON.parse(stored);
     if (
@@ -86,9 +98,74 @@ function loadState() {
       customExercises: parsed.customExercises || [],
     };
   } catch (error) {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(`${USER_STORAGE_PREFIX}${currentDni}`);
     setStatus(`No se pudieron leer las rutinas guardadas: ${error.message}`, true);
   }
+}
+
+function initializeUserAccess(onAuthenticated) {
+  const dialog = document.querySelector("#user-dialog");
+  const form = document.querySelector("#user-form");
+  const dniInput = document.querySelector("#user-dni");
+  const errorMessage = document.querySelector("#user-error");
+  const userBadge = document.querySelector("#user-badge");
+  const changeUserButton = document.querySelector("#change-user");
+
+  function showUser(dni) {
+    currentDni = dni;
+    userBadge.textContent = `DNI ${dni}`;
+    userBadge.hidden = false;
+    changeUserButton.hidden = false;
+    onAuthenticated();
+  }
+
+  let savedDni;
+  try {
+    savedDni = sessionStorage.getItem(SESSION_USER_KEY);
+  } catch (error) {
+    setStatus(`No se pudo recuperar el usuario de esta sesión: ${error.message}`, true);
+  }
+
+  if (savedDni && /^\d{7,8}$/.test(savedDni)) {
+    showUser(savedDni);
+  } else {
+    dialog.showModal();
+    dniInput.focus();
+  }
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const dni = dniInput.value.trim();
+    if (!/^\d{7,8}$/.test(dni)) {
+      errorMessage.textContent = "Ingresá un DNI válido de 7 u 8 números.";
+      errorMessage.hidden = false;
+      dniInput.focus();
+      return;
+    }
+    try {
+      sessionStorage.setItem(SESSION_USER_KEY, dni);
+    } catch (error) {
+      errorMessage.textContent = `No se pudo iniciar la sesión: ${error.message}`;
+      errorMessage.hidden = false;
+      return;
+    }
+    errorMessage.hidden = true;
+    dialog.close();
+    showUser(dni);
+  });
+
+  dniInput.addEventListener("input", () => {
+    errorMessage.hidden = true;
+  });
+  changeUserButton.addEventListener("click", () => {
+    try {
+      sessionStorage.removeItem(SESSION_USER_KEY);
+    } catch (error) {
+      setStatus(`No se pudo cambiar de usuario: ${error.message}`, true);
+      return;
+    }
+    window.location.reload();
+  });
 }
 
 function getRoutineExercise(exerciseId) {
@@ -569,24 +646,34 @@ function renderHomeRoutines() {
       );
       details.textContent = `${routine.exercises.length} ejercicios · ${totalSets} series`;
 
-      const action = document.createElement("button");
-      action.className = "secondary-button";
-      action.type = "button";
-      action.textContent = "Abrir rutina →";
-      action.addEventListener("click", () => {
-        state.activeRoutine = {
-          name: routine.name,
-          exercises: JSON.parse(JSON.stringify(routine.exercises)),
-          seriesLocked: true,
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        window.location.href = "./crear.html";
-      });
+      const actions = document.createElement("div");
+      actions.className = "saved-routine-actions";
+      const trainLink = document.createElement("a");
+      trainLink.className = "primary-button";
+      trainLink.href = `./entrenamiento.html?id=${encodeURIComponent(routine.id)}`;
+      trainLink.textContent = "Ver para entrenar";
 
-      card.append(eyebrow, title, details, action);
+      const editButton = document.createElement("button");
+      editButton.className = "secondary-button";
+      editButton.type = "button";
+      editButton.textContent = "Editar";
+      editButton.addEventListener("click", () => editSavedRoutine(routine));
+
+      actions.append(trainLink, editButton);
+      card.append(eyebrow, title, details, actions);
       return card;
     }),
   );
+}
+
+function editSavedRoutine(routine) {
+  state.activeRoutine = {
+    name: routine.name,
+    exercises: JSON.parse(JSON.stringify(routine.exercises)),
+    seriesLocked: true,
+  };
+  saveState();
+  window.location.href = "./crear.html";
 }
 
 function createRoutineFromHome() {
@@ -597,8 +684,109 @@ function createRoutineFromHome() {
     return;
   }
   state.activeRoutine = { name: "", exercises: [], seriesLocked: false };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  saveState();
   window.location.href = "./crear.html";
+}
+
+async function initializeWorkoutView() {
+  loadState();
+  const routineId = new URLSearchParams(window.location.search).get("id");
+  const routine = state.savedRoutines.find((item) => item.id === routineId);
+  const title = document.querySelector("#workout-routine-name");
+  const count = document.querySelector("#workout-count");
+  const summary = document.querySelector("#workout-summary");
+  const list = document.querySelector("#workout-exercises");
+  const empty = document.querySelector("#workout-empty");
+  const editLink = document.querySelector("#edit-workout");
+
+  if (!routine) {
+    title.textContent = "Rutina no encontrada";
+    empty.hidden = false;
+    setStatus("Elegí una rutina guardada para verla en modo entrenamiento.", true);
+    return;
+  }
+
+  try {
+    exercises = await fetchJson("./data/exercises.json");
+    exercises = [...exercises, ...state.customExercises];
+    title.textContent = routine.name;
+    count.textContent = `${routine.exercises.length} EJERCICIOS`;
+    editLink.hidden = false;
+    editLink.addEventListener("click", (event) => {
+      event.preventDefault();
+      editSavedRoutine(routine);
+    });
+
+    const totalSets = routine.exercises.reduce(
+      (total, exercise) => total + Number(exercise.sets || 0),
+      0,
+    );
+    const summaryChip = document.createElement("span");
+    summaryChip.className = "summary-chip";
+    summaryChip.textContent = `${routine.exercises.length} ejercicios · ${totalSets} series`;
+    summary.replaceChildren(summaryChip);
+
+    list.replaceChildren(
+      ...routine.exercises.map((routineExercise, index) => {
+        const exercise = getExerciseById(routineExercise.id);
+        const card = document.createElement("article");
+        card.className = "exercise-card workout-exercise-card";
+
+        const info = document.createElement("div");
+        info.className = "exercise-info";
+        const number = document.createElement("p");
+        number.className = "exercise-number";
+        number.textContent = `EJERCICIO ${String(index + 1).padStart(2, "0")}`;
+        const name = document.createElement("h3");
+        name.textContent = exercise?.name || "Ejercicio no disponible";
+        const description = document.createElement("p");
+        description.className = "exercise-description";
+        description.textContent = exercise?.description || "No hay descripción disponible.";
+
+        const details = document.createElement("div");
+        details.className = "exercise-stats";
+        [
+          [`${routineExercise.sets} series`, "SERIES"],
+          [`${routineExercise.reps} reps`, "REPETICIONES"],
+          [`${routineExercise.rest_seconds} s`, "DESCANSO"],
+        ].forEach(([value, label]) => {
+          const chip = document.createElement("span");
+          chip.className = "exercise-stat";
+          const strong = document.createElement("strong");
+          strong.textContent = value;
+          chip.append(strong, ` · ${label}`);
+          details.append(chip);
+        });
+
+        const weightsTitle = document.createElement("p");
+        weightsTitle.className = "weight-heading";
+        weightsTitle.textContent = "PESOS REGISTRADOS";
+        const weights = document.createElement("div");
+        weights.className = "workout-weight-list";
+        for (let setIndex = 0; setIndex < routineExercise.sets; setIndex += 1) {
+          const weight = routineExercise.weights?.[setIndex];
+          const set = document.createElement("div");
+          set.className = "workout-weight";
+          const setName = document.createElement("span");
+          setName.textContent = `Serie ${setIndex + 1}`;
+          const value = document.createElement("strong");
+          value.textContent = weight ? `${weight} kg` : "Sin registrar";
+          set.append(setName, value);
+          weights.append(set);
+        }
+
+        info.append(number, name, description, details, weightsTitle, weights);
+        card.append(info);
+        return card;
+      }),
+    );
+    if (routine.exercises.some((item) => !getExerciseById(item.id))) {
+      setStatus("Hay ejercicios de esta rutina que no están disponibles en el catálogo.", true);
+    }
+  } catch (error) {
+    title.textContent = routine.name;
+    setStatus(`No se pudo cargar el catálogo de ejercicios: ${error.message}`, true);
+  }
 }
 
 function openExerciseVideo(exercise) {
@@ -665,14 +853,18 @@ if (catalogGrid) {
   videoDialog.addEventListener("click", (event) => {
     if (event.target === videoDialog) videoDialog.close();
   });
-  initializeBuilder();
+  initializeUserAccess(initializeBuilder);
+} else if (workoutView) {
+  initializeUserAccess(initializeWorkoutView);
 } else {
-  loadState();
-  renderHomeRoutines();
-  document
-    .querySelector(".create-routine-link")
-    .addEventListener("click", (event) => {
-      event.preventDefault();
-      createRoutineFromHome();
-    });
+  initializeUserAccess(() => {
+    loadState();
+    renderHomeRoutines();
+    document
+      .querySelector(".create-routine-link")
+      .addEventListener("click", (event) => {
+        event.preventDefault();
+        createRoutineFromHome();
+      });
+  });
 }
