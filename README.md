@@ -78,4 +78,4 @@ Desde el constructor también podés desplegar **Agregar un ejercicio que no est
 
 Antes de guardar una rutina, podés ajustar entre 1 y 10 series para cada ejercicio. Al guardar o cargar una rutina guardada, la cantidad de series queda bloqueada; para elegir otra cantidad hay que empezar una rutina nueva. El registro del peso por serie sigue editable desde el constructor y el modo entrenamiento.
 
-El botón **Ver video** abre una ventana para reproducir los videos que tengan una URL real. Para ejercicios sin ID configurado, ofrece una búsqueda directa en YouTube. Reemplazá `VIDEO_ID` en `backend/exercises.json` por el ID real de YouTube para habilitar el reproductor integrado. Se aceptan enlaces `/watch?v=...`, `/shorts/...` y `/embed/...`.
+El botón **Ver video** está disponible en el catálogo y en cada ejercicio del plan de entrenamiento. Abre una ventana para reproducir los videos que tengan una URL real; para ejercicios sin ID configurado, ofrece una búsqueda directa en YouTube. Reemplazá `VIDEO_ID` en `backend/exercises.json` por el ID real de YouTube para habilitar el reproductor integrado. Se aceptan enlaces `/watch?v=...`, `/shorts/...` y `/embed/...`.

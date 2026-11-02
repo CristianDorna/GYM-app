@@ -1085,6 +1085,15 @@ async function initializeWorkoutView() {
         description.className = "exercise-description";
         description.textContent = exercise?.description || "No hay descripción disponible.";
 
+        if (exercise) {
+          const videoButton = document.createElement("button");
+          videoButton.className = "video-button";
+          videoButton.type = "button";
+          videoButton.textContent = "▶ Ver video";
+          videoButton.addEventListener("click", () => openExerciseVideo(exercise));
+          info.append(videoButton);
+        }
+
         const details = document.createElement("div");
         details.className = "exercise-stats";
         [
@@ -1171,6 +1180,14 @@ function openExerciseVideo(exercise) {
   videoDialog.showModal();
 }
 
+function initializeVideoDialog() {
+  document.querySelector("#close-video").addEventListener("click", () => videoDialog.close());
+  videoDialog.addEventListener("close", () => videoContent.replaceChildren());
+  videoDialog.addEventListener("click", (event) => {
+    if (event.target === videoDialog) videoDialog.close();
+  });
+}
+
 async function initializeBuilder() {
   await loadState();
   try {
@@ -1205,13 +1222,10 @@ if (catalogGrid) {
     document.querySelector("#delete-routine").disabled = !savedRoutines.value;
   });
   document.querySelector("#delete-routine").addEventListener("click", deleteSelectedRoutine);
-  document.querySelector("#close-video").addEventListener("click", () => videoDialog.close());
-  videoDialog.addEventListener("close", () => videoContent.replaceChildren());
-  videoDialog.addEventListener("click", (event) => {
-    if (event.target === videoDialog) videoDialog.close();
-  });
+  initializeVideoDialog();
   initializeUserAccess(initializeBuilder);
 } else if (workoutView) {
+  initializeVideoDialog();
   initializeUserAccess(initializeWorkoutView);
 } else {
   initializeUserAccess(async () => {

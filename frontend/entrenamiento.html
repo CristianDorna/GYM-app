@@ -19,7 +19,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./styles.css?v=13" />
     <script src="./supabase-config.js?v=1" defer></script>
-    <script src="./app.js?v=7" defer></script>
+    <script src="./app.js?v=8" defer></script>
   </head>
   <body class="min-h-screen antialiased">
     <div class="page-shell">
@@ -80,6 +80,13 @@
         <span>ESCUCHÁ TU CUERPO · PRIORIZÁ LA TÉCNICA</span>
       </footer>
     </div>
+    <dialog id="video-dialog" class="video-dialog" aria-labelledby="video-title">
+      <div class="video-dialog-header">
+        <h2 id="video-title">Video del ejercicio</h2>
+        <button id="close-video" class="close-video" type="button" aria-label="Cerrar video">×</button>
+      </div>
+      <div id="video-content" class="video-content"></div>
+    </dialog>
     <dialog id="user-dialog" class="user-dialog" aria-labelledby="user-title">
       <form id="user-form" class="user-form">
         <p class="eyebrow">ACCESO A TUS RUTINAS</p>
