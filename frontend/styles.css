@@ -540,6 +540,9 @@ h2 {
 
 .workout-weight input {
   width: 76px;
+  min-width: 0;
+  max-width: 76px;
+  flex: 0 1 76px;
   min-height: 30px;
   padding: 0 7px;
   border: 1px solid var(--line);
