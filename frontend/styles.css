@@ -492,7 +492,12 @@ h2 {
 }
 
 .workout-exercise-card .exercise-stat {
-  background: rgb(20 24 15 / 10%);
+  background: #14180f;
+  color: var(--accent);
+}
+
+.workout-exercise-card .weight-heading {
+  color: #14180f;
 }
 
 .workout-exercise-card h3 {
