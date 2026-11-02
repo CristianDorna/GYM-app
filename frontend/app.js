@@ -1,7 +1,15 @@
 const STORAGE_KEY = "gym-routine-app-v2";
 const USER_STORAGE_PREFIX = `${STORAGE_KEY}:`;
 const SESSION_USER_KEY = "gym-routine-user-dni";
+const SUPABASE_TABLE = "gym_user_states";
+const SUPABASE_CONFIG = window.GYM_SUPABASE_CONFIG;
 let currentDni = "";
+let remoteSaveTimer;
+let remoteSavePromise = Promise.resolve();
+let remoteSaveVersion = 0;
+let remoteSavedVersion = 0;
+let remoteSaveMessage = "";
+let localCopyAvailable = true;
 
 const catalogGrid = document.querySelector("#catalog-grid");
 const catalogCount = document.querySelector("#catalog-count");
@@ -52,16 +60,73 @@ async function fetchJson(url) {
   return response.json();
 }
 
-function saveState(message = "Cambios guardados en este navegador.") {
+function setLocalState() {
   try {
     localStorage.setItem(`${USER_STORAGE_PREFIX}${currentDni}`, JSON.stringify(state));
-    setStatus(message);
+    localCopyAvailable = true;
+    return true;
   } catch (error) {
-    setStatus(`No se pudieron guardar los cambios: ${error.message}`, true);
+    localCopyAvailable = false;
+    setStatus(`No se pudo guardar una copia local: ${error.message}`, true);
+    return false;
   }
 }
 
-function loadState() {
+function getSupabaseUrl(query = "") {
+  if (!SUPABASE_CONFIG?.url || !SUPABASE_CONFIG?.publishableKey) {
+    throw new Error("Falta configurar la conexión con Supabase.");
+  }
+  const baseUrl = SUPABASE_CONFIG.url.replace(/\/+$/, "");
+  return `${baseUrl}/rest/v1/${SUPABASE_TABLE}${query}`;
+}
+
+function getSupabaseHeaders(extraHeaders = {}) {
+  return {
+    apikey: SUPABASE_CONFIG.publishableKey,
+    ...extraHeaders,
+  };
+}
+
+async function supabaseRequest(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: getSupabaseHeaders(options.headers),
+  });
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(body || `Supabase respondió con el estado ${response.status}.`);
+  }
+  const responseText = await response.text();
+  return responseText ? JSON.parse(responseText) : null;
+}
+
+function normalizeState(parsed) {
+  if (
+    !parsed ||
+    typeof parsed !== "object" ||
+    !parsed.activeRoutine ||
+    !Array.isArray(parsed.activeRoutine.exercises) ||
+    !Array.isArray(parsed.savedRoutines) ||
+    (parsed.customExercises !== undefined && !Array.isArray(parsed.customExercises))
+  ) {
+    throw new Error("El formato de las rutinas guardadas no es válido.");
+  }
+  const activeRoutine = {
+    ...parsed.activeRoutine,
+    seriesLocked: parsed.activeRoutine.seriesLocked ?? parsed.savedRoutines.some(
+      (routine) =>
+        routine.name === parsed.activeRoutine.name &&
+        JSON.stringify(routine.exercises) === JSON.stringify(parsed.activeRoutine.exercises),
+    ),
+  };
+  return {
+    ...parsed,
+    activeRoutine,
+    customExercises: parsed.customExercises || [],
+  };
+}
+
+function readLocalState() {
   try {
     const userStorageKey = `${USER_STORAGE_PREFIX}${currentDni}`;
     let stored = localStorage.getItem(userStorageKey);
@@ -72,36 +137,148 @@ function loadState() {
         localStorage.removeItem(STORAGE_KEY);
       }
     }
-    if (!stored) return;
-    const parsed = JSON.parse(stored);
-    if (
-      !parsed ||
-      typeof parsed !== "object" ||
-      !parsed.activeRoutine ||
-      !Array.isArray(parsed.activeRoutine.exercises) ||
-      !Array.isArray(parsed.savedRoutines) ||
-      (parsed.customExercises !== undefined && !Array.isArray(parsed.customExercises))
-    ) {
-      throw new Error("El formato de las rutinas guardadas no es válido.");
-    }
-    const activeRoutine = {
-      ...parsed.activeRoutine,
-      seriesLocked: parsed.activeRoutine.seriesLocked ?? parsed.savedRoutines.some(
-        (routine) =>
-          routine.name === parsed.activeRoutine.name &&
-          JSON.stringify(routine.exercises) === JSON.stringify(parsed.activeRoutine.exercises),
-      ),
-    };
-    state = {
-      ...parsed,
-      activeRoutine,
-      customExercises: parsed.customExercises || [],
-    };
+    return stored ? normalizeState(JSON.parse(stored)) : null;
   } catch (error) {
-    localStorage.removeItem(`${USER_STORAGE_PREFIX}${currentDni}`);
+    try {
+      localStorage.removeItem(`${USER_STORAGE_PREFIX}${currentDni}`);
+    } catch (storageError) {
+      setStatus(`No se pudieron leer ni limpiar los datos locales: ${storageError.message}`, true);
+      return null;
+    }
     setStatus(`No se pudieron leer las rutinas guardadas: ${error.message}`, true);
+    return null;
   }
 }
+
+async function saveRemoteState(serializedState = JSON.stringify(state)) {
+  const query = "?on_conflict=dni";
+  await supabaseRequest(getSupabaseUrl(query), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates,return=minimal",
+    },
+    body: JSON.stringify({
+      dni: currentDni,
+      state: JSON.parse(serializedState),
+      updated_at: new Date().toISOString(),
+    }),
+  });
+}
+
+async function loadState() {
+  const localState = readLocalState();
+  try {
+    const query = new URLSearchParams({
+      select: "state",
+      dni: `eq.${currentDni}`,
+    });
+    const rows = await supabaseRequest(getSupabaseUrl(`?${query}`));
+    if (rows.length) {
+      state = normalizeState(rows[0].state);
+      const savedLocally = setLocalState();
+      setStatus(
+        savedLocally
+          ? "Rutinas y pesos sincronizados desde Supabase."
+          : "Datos cargados desde Supabase, pero no se pudo guardar una copia local.",
+        !savedLocally,
+      );
+      return;
+    }
+    if (localState) {
+      state = localState;
+      await saveRemoteState();
+      const savedLocally = setLocalState();
+      setStatus(
+        savedLocally
+          ? "Rutinas locales copiadas a Supabase para sincronizarlas."
+          : "Rutinas copiadas a Supabase, pero no se pudo guardar una copia local.",
+        !savedLocally,
+      );
+      return;
+    }
+    state = {
+      activeRoutine: { name: "", exercises: [], seriesLocked: false },
+      savedRoutines: [],
+      customExercises: [],
+    };
+    setStatus("Conectado a Supabase. Los cambios se sincronizarán automáticamente.");
+  } catch (error) {
+    if (localState) state = localState;
+    setStatus(
+      `No se pudo sincronizar con Supabase; se usarán los datos de este dispositivo. ${error.message}`,
+      true,
+    );
+  }
+}
+
+function saveState(message = "Cambios guardados.") {
+  const savedLocally = setLocalState();
+  remoteSaveMessage = message;
+  remoteSaveVersion += 1;
+  clearTimeout(remoteSaveTimer);
+  setStatus(
+    savedLocally
+      ? "Guardando localmente y sincronizando con Supabase..."
+      : "Sin copia local; intentando sincronizar con Supabase...",
+  );
+  remoteSaveTimer = setTimeout(() => {
+    void flushRemoteSave();
+  }, 400);
+}
+
+async function flushRemoteSave() {
+  clearTimeout(remoteSaveTimer);
+  remoteSaveTimer = undefined;
+  const version = remoteSaveVersion;
+  const message = remoteSaveMessage;
+  const serializedState = JSON.stringify(state);
+  const saveLatestState = () => saveRemoteState(serializedState);
+  remoteSavePromise = remoteSavePromise.then(saveLatestState, saveLatestState);
+  try {
+    await remoteSavePromise;
+    remoteSavedVersion = Math.max(remoteSavedVersion, version);
+    if (version === remoteSaveVersion) {
+      setStatus(
+        localCopyAvailable
+          ? `${message} Sincronizado con Supabase.`
+          : `${message} Sincronizado con Supabase, pero sin copia local.`,
+        !localCopyAvailable,
+      );
+    }
+  } catch (error) {
+    if (version === remoteSaveVersion) {
+      setStatus(
+        `Se guardó en este dispositivo, pero no se pudo sincronizar con Supabase. ${error.message}`,
+        true,
+      );
+    }
+  }
+}
+
+window.addEventListener("pagehide", () => {
+  if (remoteSaveVersion <= remoteSavedVersion) return;
+  clearTimeout(remoteSaveTimer);
+  try {
+    void fetch(getSupabaseUrl("?on_conflict=dni"), {
+      method: "POST",
+      headers: getSupabaseHeaders({
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates,return=minimal",
+      }),
+      body: JSON.stringify({
+        dni: currentDni,
+        state,
+        updated_at: new Date().toISOString(),
+      }),
+      keepalive: true,
+    }).catch((error) => {
+      setStatus(`No se pudo completar la sincronización al salir: ${error.message}`, true);
+    });
+  } catch (error) {
+    setStatus(`No se pudo enviar la sincronización antes de salir: ${error.message}`, true);
+  }
+});
 
 function initializeUserAccess(onAuthenticated) {
   const dialog = document.querySelector("#user-dialog");
@@ -666,17 +843,18 @@ function renderHomeRoutines() {
   );
 }
 
-function editSavedRoutine(routine) {
+async function editSavedRoutine(routine) {
   state.activeRoutine = {
     name: routine.name,
     exercises: JSON.parse(JSON.stringify(routine.exercises)),
     seriesLocked: true,
   };
   saveState();
+  await flushRemoteSave();
   window.location.href = "./crear.html";
 }
 
-function createRoutineFromHome() {
+async function createRoutineFromHome() {
   if (
     state.activeRoutine.exercises.length &&
     !window.confirm("Se reemplazará el borrador actual. Las rutinas guardadas no se borran. ¿Continuar?")
@@ -685,11 +863,12 @@ function createRoutineFromHome() {
   }
   state.activeRoutine = { name: "", exercises: [], seriesLocked: false };
   saveState();
+  await flushRemoteSave();
   window.location.href = "./crear.html";
 }
 
 async function initializeWorkoutView() {
-  loadState();
+  await loadState();
   const routineId = new URLSearchParams(window.location.search).get("id");
   const routine = state.savedRoutines.find((item) => item.id === routineId);
   const title = document.querySelector("#workout-routine-name");
@@ -819,7 +998,7 @@ function openExerciseVideo(exercise) {
 }
 
 async function initializeBuilder() {
-  loadState();
+  await loadState();
   try {
     exercises = await fetchJson("./data/exercises.json");
     exercises = [...exercises, ...state.customExercises];
@@ -857,8 +1036,8 @@ if (catalogGrid) {
 } else if (workoutView) {
   initializeUserAccess(initializeWorkoutView);
 } else {
-  initializeUserAccess(() => {
-    loadState();
+  initializeUserAccess(async () => {
+    await loadState();
     renderHomeRoutines();
     document
       .querySelector(".create-routine-link")

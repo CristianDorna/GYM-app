@@ -12,6 +12,7 @@ GYM-app/
 │   └── main.py
 ├── frontend/
 │   ├── app.js
+│   ├── supabase-config.js
 │   ├── crear.html
 │   ├── entrenamiento.html
 │   ├── index.html
@@ -30,7 +31,18 @@ GYM-app/
 3. Cada push a `main` o `master` ejecuta el workflow de `.github/workflows/pages.yml`. También podés iniciarlo manualmente desde la pestaña **Actions**.
 4. Cuando el workflow termine, GitHub mostrará la dirección pública en **Settings → Pages** (normalmente `https://USUARIO.github.io/REPOSITORIO/`).
 
-El workflow prepara el sitio estático copiando el frontend y el catálogo de ejercicios a la carpeta de publicación. Al entrar, la app pide un DNI para separar las rutinas, ejercicios personalizados y pesos de cada usuario en el almacenamiento local del navegador. Los datos no se sincronizan entre dispositivos ni navegadores. El DNI solo identifica el espacio local: no verifica la identidad ni funciona como contraseña. Si ya había datos guardados antes de esta actualización, se asignan al primer DNI que inicie sesión en ese navegador. GitHub Pages no ejecuta el backend FastAPI ni ofrece la API.
+El workflow prepara el sitio estático copiando el frontend y el catálogo de ejercicios a la carpeta de publicación. GitHub Pages no ejecuta el backend FastAPI ni ofrece una base de datos. Para sincronizar rutinas entre navegadores, configurá Supabase siguiendo la sección **Sincronizar con Supabase**.
+
+El acceso sigue siendo solo por DNI, sin contraseña. El DNI identifica el espacio de datos pero no verifica la identidad. La configuración actual de Supabase permite que cualquier persona que conozca la URL pública del proyecto y su clave pública lea y modifique los datos de todos los DNI. No guardes información sensible en esta app.
+
+## Sincronizar con Supabase
+
+1. En Supabase, abrí **SQL Editor → New query**, copiá el contenido de [`supabase/schema.sql`](./supabase/schema.sql) y ejecutalo. Esto crea la tabla `gym_user_states` y sus permisos para la app.
+2. Revisá [`frontend/supabase-config.js`](./frontend/supabase-config.js). Ya contiene la URL del proyecto y la clave **publishable** compartida para esta configuración. Esa clave es pública y se distribuye con el frontend; nunca reemplazarla por `service_role` ni por una clave secreta.
+3. Subí los cambios a GitHub. El workflow de Pages volverá a publicar el sitio.
+4. Abrí la app con el mismo DNI en los dispositivos. Al conectarse, la copia que ya exista en Supabase será la compartida. Si todavía no hay una, la app copiará a Supabase la copia local del primer navegador que tenga datos para ese DNI.
+
+La app conserva una copia local y muestra un error si no logra sincronizar. Si usás la app en más de un dispositivo al mismo tiempo, el último cambio sincronizado reemplaza el estado completo anterior; evitá editar la misma rutina en varios dispositivos simultáneamente.
 
 ## Ejecutar en Windows
 
@@ -53,7 +65,7 @@ La interfaz carga Tailwind CSS y las fuentes desde sus CDNs, por lo que se neces
 - `GET /api/exercises`: catálogo completo; acepta `muscle_group` y `q` como filtros.
 - `GET /api/routines/{group_id}?limit=4`: genera una rutina nueva y variada.
 
-El catálogo incluye ejercicios con nombres y descripciones en español rioplatense, separados por grupo muscular: pecho, espalda, piernas, hombros, bíceps, tríceps y core. El constructor permite buscar y filtrar ejercicios, agregar los que quieras a la rutina y registrar el peso en kg de cada serie. La pantalla de entrenamiento muestra por separado la rutina guardada y los pesos registrados, sin controles de edición. Las rutinas guardadas y el borrador activo se conservan en el almacenamiento local del navegador, separados por DNI.
+El catálogo incluye ejercicios con nombres y descripciones en español rioplatense, separados por grupo muscular: pecho, espalda, piernas, hombros, bíceps, tríceps y core. El constructor permite buscar y filtrar ejercicios, agregar los que quieras a la rutina y registrar el peso en kg de cada serie. La pantalla de entrenamiento muestra por separado la rutina guardada y los pesos registrados, sin controles de edición. Las rutinas, ejercicios personalizados y pesos se sincronizan en Supabase y también se conserva una copia local en cada navegador.
 
 Desde el constructor también podés desplegar **Agregar un ejercicio que no está en el listado**, completar sus datos y guardarlo. El ejercicio se agrega a la rutina activa y queda disponible en el catálogo de ese navegador.
 
