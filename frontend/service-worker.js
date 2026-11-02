@@ -1,10 +1,10 @@
-const CACHE_NAME = "urbanfit-app-v9";
+const CACHE_NAME = "urbanfit-app-v11";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./crear.html",
   "./entrenamiento.html",
-  "./styles.css?v=14",
+  "./styles.css?v=16",
   "./supabase-config.js?v=1",
   "./app.js?v=8",
   "./manifest.webmanifest",
