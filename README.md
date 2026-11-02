@@ -49,6 +49,8 @@ El acceso sigue siendo solo por DNI, sin contraseña. El DNI identifica el espac
 
 La app conserva una copia local y muestra un error si no logra sincronizar. Si usás la app en más de un dispositivo al mismo tiempo, el último cambio sincronizado reemplaza el estado completo anterior; evitá editar la misma rutina en varios dispositivos simultáneamente.
 
+Las rutinas guardadas se pueden eliminar desde **Mis rutinas** o desde el constructor; la app pide confirmación y sincroniza la eliminación con Supabase.
+
 ## Ejecutar en Windows
 
 Para ejecutar localmente también se puede usar el backend FastAPI. Desde la carpeta del proyecto, abre una terminal en VS Code:

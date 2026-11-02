@@ -57,9 +57,29 @@ async function fetchJson(url) {
   const response = await fetch(url);
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
-    throw new Error(body.detail || `No se pudo completar la solicitud (${response.status}).`);
+    throw new Error(
+      body.detail || `No se pudo cargar ${url} (${response.status} ${response.statusText}).`,
+    );
   }
   return response.json();
+}
+
+async function loadExerciseCatalog() {
+  try {
+    return await fetchJson("./data/exercises.json");
+  } catch (staticError) {
+    try {
+      return await fetchJson("../backend/exercises.json");
+    } catch (localError) {
+      const staticMessage =
+        staticError instanceof Error ? staticError.message : String(staticError);
+      const localMessage =
+        localError instanceof Error ? localError.message : String(localError);
+      throw new Error(
+        `No se pudo cargar el catálogo de ejercicios. ${staticMessage} ${localMessage}`,
+      );
+    }
+  }
 }
 
 function getInstallInstructions() {
@@ -782,6 +802,39 @@ function renderSavedRoutines(selectedId = "") {
     option.selected = routine.id === selectedId;
     savedRoutines.append(option);
   });
+  const deleteButton = document.querySelector("#delete-routine");
+  if (deleteButton) deleteButton.disabled = !selectedId;
+}
+
+function deleteSavedRoutine(routine) {
+  if (!window.confirm(`¿Eliminar la rutina «${routine.name}»? Esta acción no se puede deshacer.`)) {
+    return;
+  }
+
+  const activeMatchesDeleted =
+    state.activeRoutine.name === routine.name &&
+    JSON.stringify(state.activeRoutine.exercises) === JSON.stringify(routine.exercises);
+  state.savedRoutines = state.savedRoutines.filter((item) => item.id !== routine.id);
+  if (activeMatchesDeleted) {
+    state.activeRoutine = { name: "", exercises: [], seriesLocked: false };
+  }
+
+  if (savedRoutines) renderSavedRoutines();
+  if (routineList) {
+    renderRoutine();
+    renderCatalog();
+  }
+  if (document.querySelector("#saved-routine-list")) renderHomeRoutines();
+  saveState(`Rutina «${routine.name}» eliminada.`);
+}
+
+function deleteSelectedRoutine() {
+  const routine = state.savedRoutines.find((item) => item.id === savedRoutines.value);
+  if (!routine) {
+    setStatus("Elegí una rutina guardada para eliminar.", true);
+    return;
+  }
+  deleteSavedRoutine(routine);
 }
 
 function saveRoutine() {
@@ -886,7 +939,13 @@ function renderHomeRoutines() {
       editButton.textContent = "Editar";
       editButton.addEventListener("click", () => editSavedRoutine(routine));
 
-      actions.append(trainLink, editButton);
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "secondary-button delete-routine-button";
+      deleteButton.type = "button";
+      deleteButton.textContent = "Eliminar";
+      deleteButton.addEventListener("click", () => deleteSavedRoutine(routine));
+
+      actions.append(trainLink, editButton, deleteButton);
       card.append(eyebrow, title, details, actions);
       return card;
     }),
@@ -936,7 +995,7 @@ async function initializeWorkoutView() {
   }
 
   try {
-    exercises = await fetchJson("./data/exercises.json");
+    exercises = await loadExerciseCatalog();
     exercises = [...exercises, ...state.customExercises];
     title.textContent = routine.name;
     count.textContent = `${routine.exercises.length} EJERCICIOS`;
@@ -1050,7 +1109,7 @@ function openExerciseVideo(exercise) {
 async function initializeBuilder() {
   await loadState();
   try {
-    exercises = await fetchJson("./data/exercises.json");
+    exercises = await loadExerciseCatalog();
     exercises = [...exercises, ...state.customExercises];
     renderFilters();
     renderCustomExerciseGroupOptions();
@@ -1077,6 +1136,10 @@ if (catalogGrid) {
     .addEventListener("submit", addCustomExercise);
   document.querySelector("#load-routine").addEventListener("click", loadSavedRoutine);
   document.querySelector("#new-routine").addEventListener("click", startNewRoutine);
+  savedRoutines.addEventListener("change", () => {
+    document.querySelector("#delete-routine").disabled = !savedRoutines.value;
+  });
+  document.querySelector("#delete-routine").addEventListener("click", deleteSelectedRoutine);
   document.querySelector("#close-video").addEventListener("click", () => videoDialog.close());
   videoDialog.addEventListener("close", () => videoContent.replaceChildren());
   videoDialog.addEventListener("click", (event) => {
