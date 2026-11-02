@@ -1089,10 +1089,11 @@ h3 {
   width: min(420px, calc(100% - 28px));
   max-width: none;
   padding: 0;
-  border: 1px solid var(--line);
+  border: 1px solid #d5dacd;
   border-radius: 16px;
-  background: var(--panel);
-  color: var(--text);
+  background: #f3f4ed;
+  color: #171b14;
+  color-scheme: light;
 }
 
 .user-dialog::backdrop {
@@ -1101,9 +1102,14 @@ h3 {
 }
 
 .user-form {
+  background: var(--accent);
   display: grid;
   gap: 12px;
   padding: 28px;
+}
+
+.user-form .eyebrow {
+  color: #526b2a;
 }
 
 .user-form .eyebrow,
@@ -1118,7 +1124,7 @@ h3 {
 
 .user-form label {
   margin-top: 6px;
-  color: var(--muted);
+  color: #545a4e;
   font-size: 12px;
   font-weight: 600;
 }
@@ -1127,33 +1133,37 @@ h3 {
   width: 100%;
   min-height: 44px;
   padding: 0 12px;
-  border: 1px solid var(--line);
+  border: 1px solid #c9cec1;
   border-radius: 8px;
-  background: #11140f;
-  color: var(--text);
+  background: #fff;
+  color: #171b14;
   font: inherit;
 }
 
+.user-form input::placeholder {
+  color: #777e70;
+}
+
 .user-form input:focus {
-  border-color: var(--accent);
-  outline: 2px solid rgb(193 250 99 / 25%);
+  border-color: #789a3b;
+  outline: 2px solid rgb(82 107 42 / 25%);
 }
 
 .user-dialog-description {
-  color: var(--muted);
+  color: #545a4e;
   font-size: 13px;
   line-height: 1.6;
 }
 
 .user-dialog-hint,
 .user-dialog-error {
-  color: var(--muted);
+  color: #62685c;
   font-size: 11px;
   line-height: 1.5;
 }
 
 .user-dialog-error {
-  color: #ff9a88;
+  color: #a52a1c;
 }
 
 .user-dialog-error[hidden] {
