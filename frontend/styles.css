@@ -1162,9 +1162,9 @@ h3 {
 }
 
 .user-form .primary-button:hover {
-  border-color: var(--muted);
-  background: var(--muted);
-  color: #14180f;
+  border-color: #30362e;
+  background: var (--muted);
+  color: var(--accent);
   transform: scale(1.03);
 }
 
