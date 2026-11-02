@@ -1,25 +1,25 @@
 [
   {
     "id": "chest-bench-press",
-    "name": "Press plano con barra",
+    "name": "Press de banca con barra",
     "muscle_group": "pecho",
     "exercise_type": "compuesto",
     "description": "Bajá la barra con control hacia el centro del pecho y empujá sin despegar los hombros del banco.",
     "sets": 4,
     "reps": "6-10",
     "rest_seconds": 120,
-    "video_url": "https://www.youtube.com/shorts/74ji1uDCLpI"
+    "video_url": "https://www.youtube.com/watch?v=cbuE1Pxh4K0"
   },
   {
     "id": "chest-incline-dumbbell-press",
-    "name": "Press inclinado con mancuernas",
+    "name": "Press de banca inclinado con mancuernas",
     "muscle_group": "pecho",
     "exercise_type": "compuesto",
     "description": "Mantené el banco en una inclinación moderada y bajá las mancuernas hasta un rango cómodo.",
     "sets": 3,
     "reps": "8-12",
     "rest_seconds": 90,
-    "video_url": "https://www.youtube.com/watch?v=FGynaNs-0bU"
+    "video_url": "https://www.youtube.com/watch?v=LKvYwA74XTo"
   },
   {
     "id": "chest-push-up",
@@ -30,29 +30,29 @@
     "sets": 3,
     "reps": "10-15",
     "rest_seconds": 75,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=CtEa6tUx67U"
   },
   {
     "id": "chest-cable-fly",
-    "name": "Cruce de poleas",
+    "name": "Aperturas de pecho en polea",
     "muscle_group": "pecho",
     "exercise_type": "aislamiento",
     "description": "Con los codos ligeramente flexionados, juntá las manos delante del pecho sin balancear el cuerpo.",
     "sets": 3,
     "reps": "12-15",
     "rest_seconds": 60,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=8tO_HX1ORZc"
   },
   {
     "id": "chest-dumbbell-fly",
-    "name": "Aperturas con mancuernas en banco",
+    "name": "Aperturas de pecho con mancuernas",
     "muscle_group": "pecho",
     "exercise_type": "aislamiento",
     "description": "Abrí los brazos con control hasta sentir un estiramiento cómodo y volvé a juntar las mancuernas.",
     "sets": 3,
     "reps": "10-15",
     "rest_seconds": 60,
-    "video_url": "https://www.youtube.com/shorts/hjOUw6fsAzA"
+    "video_url": "https://www.youtube.com/watch?v=-rzDIODMhEo"
   },
   {
     "id": "chest-machine-press",
@@ -63,95 +63,84 @@
     "sets": 3,
     "reps": "8-12",
     "rest_seconds": 90,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=iBAUNsrwWdI"
   },
   {
     "id": "chest-pec-deck",
-    "name": "Contractora de pecho en máquina (pec deck)",
+    "name": "Aperturas de pecho en máquina (pec deck)",
     "muscle_group": "pecho",
     "exercise_type": "aislamiento",
     "description": "Apoyá la espalda en el respaldo y juntá los brazos delante del pecho sin despegar los hombros.",
     "sets": 3,
     "reps": "10-15",
     "rest_seconds": 60,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=Kx4O3TvsS2k"
   },
   {
     "id": "back-barbell-row",
-    "name": "Remo inclinado con barra",
+    "name": "Remo con barra inclinado",
     "muscle_group": "espalda",
     "exercise_type": "compuesto",
     "description": "Incliná el torso con la espalda neutra y llevá la barra hacia el abdomen.",
     "sets": 4,
     "reps": "6-10",
     "rest_seconds": 120,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=3adnRn0fXLY"
   },
   {
     "id": "back-lat-pulldown",
-    "name": "Jalón al pecho en polea",
+    "name": "Jalón al pecho en máquina",
     "muscle_group": "espalda",
     "exercise_type": "compuesto",
     "description": "Llevá la barra hacia la parte alta del pecho mientras bajás los hombros y mantenés el torso estable.",
     "sets": 3,
     "reps": "8-12",
     "rest_seconds": 90,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=3eYSv1nsiIU"
   },
   {
     "id": "back-seated-cable-row",
-    "name": "Remo bajo en polea",
+    "name": "Remo sentado en polea",
     "muscle_group": "espalda",
     "exercise_type": "compuesto",
     "description": "Tirá del agarre hacia el abdomen y evitá redondear la espalda al volver.",
     "sets": 3,
     "reps": "8-12",
     "rest_seconds": 90,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=2xV-tShysBM"
   },
   {
     "id": "back-face-pull",
-    "name": "Tirón a la cara en polea",
+    "name": "Face pull en polea con cuerda",
     "muscle_group": "espalda",
     "exercise_type": "aislamiento",
     "description": "Tirá de la cuerda hacia la cara, separando las manos y manteniendo los codos elevados.",
     "sets": 3,
     "reps": "12-15",
     "rest_seconds": 60,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=F5NKXFdfdp8"
   },
   {
     "id": "back-straight-arm-pulldown",
-    "name": "Jalón con brazos rectos en polea",
+    "name": "pullover en polea o con banda",
     "muscle_group": "espalda",
     "exercise_type": "aislamiento",
     "description": "Con una ligera flexión de codos, bajá la barra hacia los muslos sin inclinarte hacia atrás.",
     "sets": 3,
     "reps": "12-15",
     "rest_seconds": 60,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=AXxFso0NXXE"
   },
   {
     "id": "back-chest-supported-row-machine",
-    "name": "Remo sentado en máquina con pecho apoyado",
+    "name": "Remo con agarre supino en máquina",
     "muscle_group": "espalda",
     "exercise_type": "compuesto",
     "description": "Apoyá el pecho en el soporte y llevá los codos hacia atrás; evitá despegar el torso al tirar.",
     "sets": 3,
     "reps": "8-12",
     "rest_seconds": 90,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
-  },
-  {
-    "id": "back-pullover-machine",
-    "name": "Pullover en máquina",
-    "muscle_group": "espalda",
-    "exercise_type": "aislamiento",
-    "description": "Acomodá los brazos en los apoyos y llevá las manijas hacia abajo sin arquear la espalda.",
-    "sets": 3,
-    "reps": "10-15",
-    "rest_seconds": 60,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=k8O6ZPlH8Ho"
   },
   {
     "id": "legs-squat",
@@ -162,29 +151,29 @@
     "sets": 4,
     "reps": "6-10",
     "rest_seconds": 150,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=zmSrm4okxG8"
   },
   {
     "id": "legs-romanian-deadlift",
-    "name": "Peso muerto rumano",
+    "name": "Peso muerto",
     "muscle_group": "piernas",
     "exercise_type": "compuesto",
     "description": "Llevá la cadera hacia atrás con la espalda neutra y mantené la carga cerca de las piernas.",
     "sets": 3,
     "reps": "8-12",
     "rest_seconds": 120,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=VnSR2lsb8Vo"
   },
   {
     "id": "legs-leg-press",
-    "name": "Prensa 45 grados",
+    "name": "Prensa de piernas en máquina",
     "muscle_group": "piernas",
     "exercise_type": "compuesto",
     "description": "Bajá la plataforma hasta un rango cómodo sin despegar la zona lumbar del respaldo.",
     "sets": 3,
     "reps": "10-12",
     "rest_seconds": 120,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=OG3RtY8YVjg"
   },
   {
     "id": "legs-leg-extension",
@@ -195,18 +184,18 @@
     "sets": 3,
     "reps": "12-15",
     "rest_seconds": 60,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=rf5Nxw0vaOc"
   },
   {
     "id": "legs-leg-curl",
-    "name": "Curl femoral acostado",
+    "name": "Curl femoral acostado en maquina o mancuerna",
     "muscle_group": "piernas",
     "exercise_type": "aislamiento",
     "description": "Flexioná las rodillas suavemente y controlá el regreso a la posición inicial.",
     "sets": 3,
     "reps": "10-15",
     "rest_seconds": 60,
-    "video_url": "https://www.youtube-nocookie.com/embed/VIDEO_ID"
+    "video_url": "https://www.youtube.com/watch?v=GBlVE869RjU"
   },
   {
     "id": "legs-hack-squat-machine",
