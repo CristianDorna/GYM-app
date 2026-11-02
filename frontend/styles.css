@@ -486,8 +486,7 @@ h2 {
 
 .workout-exercise-card .exercise-number,
 .workout-exercise-card .exercise-description,
-.workout-exercise-card .exercise-stat,
-.workout-exercise-card .exercise-stat strong {
+.workout-exercise-card .exercise-stat {
   color: #14180f;
 }
 
