@@ -538,8 +538,21 @@ h2 {
   font-size: 11px;
 }
 
-.workout-weight strong {
-  color: var(--accent);
+.workout-weight input {
+  width: 76px;
+  min-height: 30px;
+  padding: 0 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #11140f;
+  color: var(--text);
+  font: inherit;
+}
+
+.workout-weight input:focus {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .workout-edit-link {

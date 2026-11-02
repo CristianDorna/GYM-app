@@ -42,7 +42,7 @@ const groups = [
 let exercises = [];
 let selectedGroup = "todos";
 let state = {
-  activeRoutine: { name: "", exercises: [], seriesLocked: false },
+  activeRoutine: { name: "", exercises: [], seriesLocked: false, savedRoutineId: "" },
   savedRoutines: [],
   customExercises: [],
 };
@@ -181,13 +181,16 @@ function normalizeState(parsed) {
   ) {
     throw new Error("El formato de las rutinas guardadas no es válido.");
   }
+  const matchingSavedRoutine = parsed.savedRoutines.find(
+    (routine) =>
+      routine.id === parsed.activeRoutine.savedRoutineId ||
+      (routine.name === parsed.activeRoutine.name &&
+        JSON.stringify(routine.exercises) === JSON.stringify(parsed.activeRoutine.exercises)),
+  );
   const activeRoutine = {
     ...parsed.activeRoutine,
-    seriesLocked: parsed.activeRoutine.seriesLocked ?? parsed.savedRoutines.some(
-      (routine) =>
-        routine.name === parsed.activeRoutine.name &&
-        JSON.stringify(routine.exercises) === JSON.stringify(parsed.activeRoutine.exercises),
-    ),
+    savedRoutineId: matchingSavedRoutine?.id || "",
+    seriesLocked: parsed.activeRoutine.seriesLocked ?? Boolean(matchingSavedRoutine),
   };
   return {
     ...parsed,
@@ -268,7 +271,7 @@ async function loadState() {
       return;
     }
     state = {
-      activeRoutine: { name: "", exercises: [], seriesLocked: false },
+      activeRoutine: { name: "", exercises: [], seriesLocked: false, savedRoutineId: "" },
       savedRoutines: [],
       customExercises: [],
     };
@@ -634,8 +637,50 @@ function removeExercise(exerciseId) {
 function updateWeight(exerciseId, setIndex, value) {
   const item = getRoutineExercise(exerciseId);
   if (!item) return;
+  item.weights = Array.from(
+    { length: item.sets },
+    (_, index) => item.weights?.[index] || "",
+  );
   item.weights[setIndex] = value;
+  if (state.activeRoutine.savedRoutineId) {
+    updateSavedRoutineWeight(
+      state.activeRoutine.savedRoutineId,
+      exerciseId,
+      setIndex,
+      value,
+      false,
+    );
+  }
   saveState("Peso registrado.");
+}
+
+function updateSavedRoutineWeight(routineId, exerciseId, setIndex, value, shouldSave = true) {
+  const routine = state.savedRoutines.find((item) => item.id === routineId);
+  const item = routine?.exercises.find((exercise) => exercise.id === exerciseId);
+  if (!item) {
+    setStatus("No se encontró la rutina o el ejercicio para guardar el peso.", true);
+    return;
+  }
+
+  item.weights = Array.from(
+    { length: item.sets },
+    (_, index) => item.weights?.[index] || "",
+  );
+  item.weights[setIndex] = value;
+  routine.updatedAt = new Date().toISOString();
+
+  if (state.activeRoutine.savedRoutineId === routineId) {
+    const activeItem = getRoutineExercise(exerciseId);
+    if (activeItem) {
+      activeItem.weights = Array.from(
+        { length: activeItem.sets },
+        (_, index) => activeItem.weights?.[index] || "",
+      );
+      activeItem.weights[setIndex] = value;
+    }
+  }
+
+  if (shouldSave) saveState("Peso registrado.");
 }
 
 function updateSetCount(exerciseId, value) {
@@ -812,11 +857,17 @@ function deleteSavedRoutine(routine) {
   }
 
   const activeMatchesDeleted =
-    state.activeRoutine.name === routine.name &&
-    JSON.stringify(state.activeRoutine.exercises) === JSON.stringify(routine.exercises);
+    state.activeRoutine.savedRoutineId === routine.id ||
+    (state.activeRoutine.name === routine.name &&
+      JSON.stringify(state.activeRoutine.exercises) === JSON.stringify(routine.exercises));
   state.savedRoutines = state.savedRoutines.filter((item) => item.id !== routine.id);
   if (activeMatchesDeleted) {
-    state.activeRoutine = { name: "", exercises: [], seriesLocked: false };
+    state.activeRoutine = {
+      name: "",
+      exercises: [],
+      seriesLocked: false,
+      savedRoutineId: "",
+    };
   }
 
   if (savedRoutines) renderSavedRoutines();
@@ -867,6 +918,7 @@ function saveRoutine() {
   }
   state.activeRoutine.name = name;
   state.activeRoutine.seriesLocked = true;
+  state.activeRoutine.savedRoutineId = saved.id;
   renderSavedRoutines(saved.id);
   renderRoutine();
   saveState(existing ? "Rutina actualizada." : "Rutina guardada.");
@@ -882,6 +934,7 @@ function loadSavedRoutine() {
     name: saved.name,
     exercises: JSON.parse(JSON.stringify(saved.exercises)),
     seriesLocked: true,
+    savedRoutineId: saved.id,
   };
   saveState(`Rutina «${saved.name}» cargada.`);
   renderCatalog();
@@ -895,7 +948,7 @@ function startNewRoutine() {
   ) {
     return;
   }
-  state.activeRoutine = { name: "", exercises: [], seriesLocked: false };
+  state.activeRoutine = { name: "", exercises: [], seriesLocked: false, savedRoutineId: "" };
   savedRoutines.value = "";
   saveState("Rutina nueva lista para armar.");
   renderCatalog();
@@ -957,6 +1010,7 @@ async function editSavedRoutine(routine) {
     name: routine.name,
     exercises: JSON.parse(JSON.stringify(routine.exercises)),
     seriesLocked: true,
+    savedRoutineId: routine.id,
   };
   saveState();
   await flushRemoteSave();
@@ -970,7 +1024,7 @@ async function createRoutineFromHome() {
   ) {
     return;
   }
-  state.activeRoutine = { name: "", exercises: [], seriesLocked: false };
+  state.activeRoutine = { name: "", exercises: [], seriesLocked: false, savedRoutineId: "" };
   saveState();
   await flushRemoteSave();
   window.location.href = "./crear.html";
@@ -1048,17 +1102,28 @@ async function initializeWorkoutView() {
 
         const weightsTitle = document.createElement("p");
         weightsTitle.className = "weight-heading";
-        weightsTitle.textContent = "PESOS REGISTRADOS";
+        weightsTitle.textContent = "PESO USADO · KG";
         const weights = document.createElement("div");
         weights.className = "workout-weight-list";
         for (let setIndex = 0; setIndex < routineExercise.sets; setIndex += 1) {
-          const weight = routineExercise.weights?.[setIndex];
           const set = document.createElement("div");
           set.className = "workout-weight";
           const setName = document.createElement("span");
           setName.textContent = `Serie ${setIndex + 1}`;
-          const value = document.createElement("strong");
-          value.textContent = weight ? `${weight} kg` : "Sin registrar";
+          const value = document.createElement("input");
+          value.type = "number";
+          value.min = "0";
+          value.step = "0.5";
+          value.inputMode = "decimal";
+          value.placeholder = "kg";
+          value.value = routineExercise.weights?.[setIndex] || "";
+          value.setAttribute(
+            "aria-label",
+            `${exercise?.name || "Ejercicio"}, peso en la serie ${setIndex + 1} en kilos`,
+          );
+          value.addEventListener("input", () =>
+            updateSavedRoutineWeight(routine.id, routineExercise.id, setIndex, value.value),
+          );
           set.append(setName, value);
           weights.append(set);
         }

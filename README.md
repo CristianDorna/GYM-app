@@ -72,10 +72,10 @@ La interfaz carga Tailwind CSS y las fuentes desde sus CDNs, por lo que se neces
 - `GET /api/exercises`: catálogo completo; acepta `muscle_group` y `q` como filtros.
 - `GET /api/routines/{group_id}?limit=4`: genera una rutina nueva y variada.
 
-El catálogo incluye ejercicios con nombres y descripciones en español rioplatense, separados por grupo muscular: pecho, espalda, piernas, hombros, bíceps, tríceps y core. El constructor permite buscar y filtrar ejercicios, agregar los que quieras a la rutina y registrar el peso en kg de cada serie. La pantalla de entrenamiento muestra por separado la rutina guardada y los pesos registrados, sin controles de edición. Las rutinas, ejercicios personalizados y pesos se sincronizan en Supabase y también se conserva una copia local en cada navegador.
+El catálogo incluye ejercicios con nombres y descripciones en español rioplatense, separados por grupo muscular: pecho, espalda, piernas, hombros, bíceps, tríceps y core. El constructor permite buscar y filtrar ejercicios, agregar los que quieras a la rutina y registrar el peso en kg de cada serie. La pantalla de entrenamiento permite registrar o actualizar el peso usado en cada serie; las series de una rutina guardada quedan fijas, pero el registro de pesos sigue editable. Las rutinas, ejercicios personalizados y pesos se sincronizan en Supabase y también se conserva una copia local en cada navegador.
 
 Desde el constructor también podés desplegar **Agregar un ejercicio que no está en el listado**, completar sus datos y guardarlo. El ejercicio se agrega a la rutina activa y queda disponible en el catálogo de ese navegador.
 
-Antes de guardar una rutina, podés ajustar entre 1 y 10 series para cada ejercicio. Al guardar o cargar una rutina guardada, la cantidad de series queda bloqueada; para elegir otra cantidad hay que empezar una rutina nueva.
+Antes de guardar una rutina, podés ajustar entre 1 y 10 series para cada ejercicio. Al guardar o cargar una rutina guardada, la cantidad de series queda bloqueada; para elegir otra cantidad hay que empezar una rutina nueva. El registro del peso por serie sigue editable desde el constructor y el modo entrenamiento.
 
 El botón **Ver video** abre una ventana para reproducir los videos que tengan una URL real. Para ejercicios sin ID configurado, ofrece una búsqueda directa en YouTube. Reemplazá `VIDEO_ID` en `backend/exercises.json` por el ID real de YouTube para habilitar el reproductor integrado. Se aceptan enlaces `/watch?v=...`, `/shorts/...` y `/embed/...`.
