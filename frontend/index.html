@@ -8,6 +8,7 @@
       content="Consultá tus rutinas guardadas y armá tu próximo entrenamiento."
     />
     <meta name="theme-color" content="#10130f" />
+    <link rel="manifest" href="./manifest.webmanifest" />
     <title>Mis rutinas — Gym Routine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,7 +17,7 @@
       rel="stylesheet"
     />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="./styles.css?v=10" />
+    <link rel="stylesheet" href="./styles.css?v=11" />
     <script src="./supabase-config.js?v=1" defer></script>
     <script src="./app.js?v=4" defer></script>
   </head>
@@ -29,6 +30,9 @@
         </a>
         <div class="topbar-actions">
           <span class="local-badge"><span></span> TU ESPACIO DE ENTRENAMIENTO</span>
+          <button id="install-app" class="secondary-button install-app-button" type="button">
+            Instalar app
+          </button>
           <span id="user-badge" class="user-badge" hidden></span>
           <button id="change-user" class="text-button change-user-button" type="button" hidden>
             Cambiar usuario

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#c1fa63"/>
+  <path d="M92 207h46v98H92zm282 0h46v98h-46zM55 231h30v50H55zm372 0h30v50h-30zM138 235h236v42H138z" fill="#14180f"/>
+  <text x="256" y="390" fill="#14180f" font-family="Arial,sans-serif" font-size="116" font-weight="700" text-anchor="middle">UF</text>
+</svg>

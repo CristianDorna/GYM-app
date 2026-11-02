@@ -12,10 +12,13 @@ GYM-app/
 │   └── main.py
 ├── frontend/
 │   ├── app.js
+│   ├── manifest.webmanifest
+│   ├── service-worker.js
 │   ├── supabase-config.js
 │   ├── crear.html
 │   ├── entrenamiento.html
 │   ├── index.html
+│   ├── icons/
 │   └── styles.css
 ├── .github/
 │   └── workflows/
@@ -30,6 +33,8 @@ GYM-app/
 2. En el repositorio, abrí **Settings → Pages** y elegí **GitHub Actions** como origen de publicación.
 3. Cada push a `main` o `master` ejecuta el workflow de `.github/workflows/pages.yml`. También podés iniciarlo manualmente desde la pestaña **Actions**.
 4. Cuando el workflow termine, GitHub mostrará la dirección pública en **Settings → Pages** (normalmente `https://USUARIO.github.io/REPOSITORIO/`).
+
+La web es instalable como aplicación (PWA) en navegadores compatibles. Abrí el sitio publicado y tocá **Instalar app**; en iPhone/iPad, usá Safari → **Compartir → Agregar a pantalla de inicio**. La instalación requiere HTTPS, disponible automáticamente en GitHub Pages.
 
 El workflow prepara el sitio estático copiando el frontend y el catálogo de ejercicios a la carpeta de publicación. GitHub Pages no ejecuta el backend FastAPI ni ofrece una base de datos. Para sincronizar rutinas entre navegadores, configurá Supabase siguiendo la sección **Sincronizar con Supabase**.
 

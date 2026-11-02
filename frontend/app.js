@@ -27,6 +27,8 @@ const videoDialog = document.querySelector("#video-dialog");
 const videoTitle = document.querySelector("#video-title");
 const videoContent = document.querySelector("#video-content");
 const workoutView = document.querySelector("#workout-view");
+const installAppButton = document.querySelector("#install-app");
+let installPrompt;
 
 const groups = [
   { id: "pecho", name: "Pecho", icon: "🏋️", description: "Empujes y aperturas" },
@@ -58,6 +60,54 @@ async function fetchJson(url) {
     throw new Error(body.detail || `No se pudo completar la solicitud (${response.status}).`);
   }
   return response.json();
+}
+
+function getInstallInstructions() {
+  const userAgent = navigator.userAgent;
+  if (/iphone|ipad|ipod/i.test(userAgent)) {
+    return "En Safari, tocá Compartir y elegí «Agregar a pantalla de inicio».";
+  }
+  if (/android/i.test(userAgent)) {
+    return "Abrí el menú ⋮ del navegador y elegí «Instalar app» o «Agregar a pantalla principal».";
+  }
+  return "En Chrome o Edge, usá el icono de instalar de la barra de direcciones o elegí «Instalar esta página como aplicación» en el menú del navegador.";
+}
+
+if (installAppButton) {
+  installAppButton.addEventListener("click", async () => {
+    if (!installPrompt) {
+      window.alert(getInstallInstructions());
+      return;
+    }
+
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === "accepted") installAppButton.hidden = true;
+    installPrompt = null;
+  });
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    installPrompt = event;
+  });
+  window.addEventListener("appinstalled", () => {
+    installAppButton.hidden = true;
+    installPrompt = null;
+    setStatus("App instalada correctamente.");
+  });
+
+  if (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    navigator.standalone === true
+  ) {
+    installAppButton.hidden = true;
+  }
+}
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js").catch((error) => {
+    setStatus(`No se pudo preparar la instalación sin conexión: ${error.message}`, true);
+  });
 }
 
 function setLocalState() {

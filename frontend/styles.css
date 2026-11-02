@@ -63,6 +63,12 @@ a:focus-visible {
   gap: 14px;
 }
 
+.install-app-button {
+  flex: 0 0 auto;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
 .user-badge {
   color: var(--accent);
   font-size: 11px;
