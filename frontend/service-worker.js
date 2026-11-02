@@ -1,17 +1,17 @@
-const CACHE_NAME = "urbanfit-app-v7";
+const CACHE_NAME = "urbanfit-app-v9";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./crear.html",
   "./entrenamiento.html",
-  "./styles.css?v=13",
+  "./styles.css?v=14",
   "./supabase-config.js?v=1",
   "./app.js?v=8",
   "./manifest.webmanifest",
   "./data/exercises.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/icon.svg",
+  "./icons/icon-192.png?v=2",
+  "./icons/icon-512.png?v=2",
+  "./icons/icon.svg?v=2",
 ];
 
 self.addEventListener("install", (event) => {
